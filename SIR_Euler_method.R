@@ -28,7 +28,8 @@ for (t in seq(1, Time-1)) {
 
 library(tidyr)
 SIR <- data.frame(T = seq(1, Time), S, I ,R )
-SIR_long <- gather(SIR, key = "key", value = "value", -T )
+SIR_long <- gather(SIR, key = 'key', value = 'value', -T )
+SIR_long$Method <- 'Euler'
 
 # Wykres lini SIR 
 library(ggplot2)
