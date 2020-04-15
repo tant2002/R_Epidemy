@@ -51,6 +51,7 @@ ggplot(SIR2_long, aes(x = T, y = value, col = key, linetype = Method))+
   theme(legend.title = element_blank())
 
 # Wykres lini SIR - skala logarytmiczna ((DOPRI + EULER))
+
 # Należy najpierw uruchomić skrypt SIR_Euler_method aby mieć wykres dla Euler w ramce SIR_long 
 
 ggplot(SIR2_long, aes(x = T, y = log(value), col = key, linetype = Method))+
