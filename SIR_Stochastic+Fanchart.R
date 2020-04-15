@@ -1,33 +1,38 @@
+`%+%` <- function(a, b) paste(a, b, sep="")
+
 # Parametry , wektory SIR i wartosci poczatkowe
 # beta - parametr infekcji, parametr ozdrowieninia
 beta <- 0.5
 gamma <- 0.1
 N <- 1000 #liczebość populacji
 Time <- 100  #ilość okresów 
-M <- 1000  #ilość symulacji
+M <- 10  #ilość powtórzeń symulacji
 
-
-sSIR <- data.frame(M = 0,
-                   T = 0,
-                   S = 0, 
-                   I = 0, 
-                   R = 0)  
+# Wartości początkowe  I S P
+Ip <- 1
+Sp <- Ip - 1
+Rp <- 0  
 
 
 
+SIR3 <- data.frame(M = integer(),
+                   T = integer(),
+                   S = integer(), 
+                   I = integer(), 
+                   R = integer()) 
 
 
 #symulacja M razy 
 for (m in seq(1, M)){
-  print(m)
-  print(Sys.time())
+  print("Symulacja nr " %+%  m)
+  # Ustawienie wartości dla okresu 1
   iSIR <- data.frame(M = rep(m,Time),
                      T = seq(1,Time),
-                     S = c(N-1, rep(0, Time-1)), 
-                     I = c(1, rep(0, Time-1)), 
+                     I = c(Ip, rep(0, Time-1)),
+                     S = c(N-Ip, rep(0, Time-1)), 
                      R = rep(0, Time)) 
 
-  
+
   # Ewolucja czasowa
   for (t in seq(2, Time)){
     u1 <- runif(N ,0, 1) 
@@ -61,33 +66,44 @@ for (m in seq(1, M)){
         }
     }
   }
-  sSIR <- rbind(sSIR, iSIR)
+  SIR3 <- rbind(SIR3, iSIR)
 }
 
 library(tidyr)
 library(dplyr)
-SIR3_long <- gather(sSIR, key = 'key', value = 'value', -T, -M)
-SIR3_long$Method <- 'Stotastic'
+
 
 
 library(ggplot2)
 library(ggfan)
-iSIR <- sSIR 
-iSIR$M <- factor(iSIR$M)
-ggplot(iSIR, aes(x = T, y = S))+
-  #geom_line()+ 
-  geom_interval()+
-  xlab( 'Czas [ np . dni ]')+
-  ylab ( ' Liczba przypadkow ( osob ) ')+
-  ggtitle( " Ewolucja SIR dla N =1000 , I_0 =1(= I_1 ), \ beta =0.5 , \ gamma =0.1 ")+
-  theme(legend.title = element_blank())
+#SIR3_long <- gather(sSIR, key = 'key', value = 'value', -T, -M)
+#SIR3_long$Method <- 'Stotastic'
 
+iSIR <- SIR3 
+iSIR <- sSIR[-1,]
 
-ggplot(iSIR, aes(x = T, y = S))+
-  #geom_line()+ 
+# Fanchart dla I
+ggplot(iSIR, aes(x = T, y = I))+
   geom_fan()+
   xlab( 'Czas [ np . dni ]')+
   ylab ( ' Liczba przypadkow ( osob ) ')+
-  ggtitle( " Ewolucja SIR dla N =1000 , I_0 =1(= I_1 ), \ beta =0.5 , \ gamma =0.1 ")+
+  ggtitle( " Fanchart I_t w modelu  SIR dla N =1000 , I_0=1 , \ beta =0.5 , \ gamma =0.1 ")+
   theme(legend.title = element_blank())
+
+#Fanchart dla S
+ggplot(iSIR, aes(x = T, y = S))+
+  geom_fan()+
+  xlab( 'Czas [ np . dni ]')+
+  ylab ( ' Liczba przypadkow ( osob ) ')+
+  ggtitle( " Fanchart S_t w modelu  SIR dla N =1000 , I_0=1 , \ beta =0.5 , \ gamma =0.1 ")+
+  theme(legend.title = element_blank())
+
+#Fanchart dla R
+ggplot(iSIR, aes(x = T, y = R))+
+  geom_fan()+
+  xlab( 'Czas [ np . dni ]')+
+  ylab ( ' Liczba przypadkow ( osob ) ')+
+  ggtitle( " Fanchart R_t w modelu  SIR dla N =1000 , I_0=1 , \ beta =0.5 , \ gamma =0.1 ")+
+  theme(legend.title = element_blank())
+
 
